@@ -14,6 +14,5 @@ Route::get('/category/list',[CategoryController::class,'liste']);
 Route::get('/category/delete/{id}',[CategoryController::class,'delete']);
 
 Route::middleware(['auth'])->group(function(){
-
-  Route::ressource(name'posts',controller:PostController::class);
+  Route::resource('posts', PostController::class);
 });
