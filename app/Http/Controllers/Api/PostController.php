@@ -2,16 +2,36 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Models\Post; // Assurez-vous que le modèle s'appelle "Post" avec une majuscule pour suivre les conventions de nommage de Laravel
+use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
+use App\Http\Controllers\Api\ApiResponseTrait;
+
 
 class PostController extends Controller
-{
+{   
+  use ApiResponseTrait;
     public function index()
+    {    
+        $posts =PostResource::collection(Post::get()) ;
+        return $this->apiResponse($posts, 'ok', 200);
+    }
+    public function show($id)
     {
-        $posts = Post::all(); // Utilisez la méthode "all()" pour récupérer tous les enregistrements de la table
-        $message = ["ok"];
-        return response(['posts' => $posts, 'message' => $message], 200); // Utilisez une syntaxe correcte pour retourner la réponse
+      $post=Post::find($id);
+      if($post){
+        return $this->apiResponse(new PostResource($post), 'ok', 200);
+      }
+return $this->apiResponse(data:null,message: 'The Post Not Found',status: 404);
+    }
+    public function store(Request $request)
+    {
+
+      $post=Post::creat($request->all());
+      if($post){
+        return $this->apiResponse(new PostResource($post), 'The post save', 201);
+      }
+      return $this->apiResponse(data:null,message: 'The Post Not save',status: 400);
     }
 }
